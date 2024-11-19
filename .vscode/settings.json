@@ -6,13 +6,21 @@
     "javascript.preferences.quoteStyle": "double", 
     "prettier.singleQuote": false, 
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "eslint.validate": [
-        "javascript",
-        "javascriptreact",
-        "typescript",
-        "typescriptreact"
-    ],
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit"
-    }
+    },
+    "tailwindCSS.lint.cssConflict": "error",
+    "tailwindCSS.classAttributes": [
+        "class",
+        "className",
+        "classNames",
+        "ngClass",
+        "class:list"
+    ],
+    "prettier.semi": false,
+
+    "[typescriptreact]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
 }
