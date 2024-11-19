@@ -35,7 +35,16 @@ def data_view(func):
     return wrapper
 
 def home(request):
-    return HttpResponse("Hello, Django!")
+    user = None
+    try:
+        user = lib_auth.get_authorized_user(request)
+    except:
+        pass
+    
+    if user:
+        return render(request, 'task_list.html', {"user_name": user.name, "user_login": user.login})
+    else:
+        return render(request, 'auth.html', {})
 
 def task_list(request):
     tasks = Task.objects.all()

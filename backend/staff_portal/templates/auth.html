@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task List</title>
+    <script>
+        async function auth(){
+            let login = document.getElementById("login").value
+            let password = document.getElementById("password").value
+
+            let url = new URL("http://127.0.0.1:8000/api/auth/")
+            url.searchParams.set("login", login)
+            url.searchParams.set("password", password)
+
+            let res = await fetch(url, {credentials: "include"})
+            let data = await res.json()
+
+            document.getElementById("result").innerHTML = JSON.stringify(data)
+            if(data.data){
+                location.reload()
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Авторизация</h1>
+    <div>login</div>
+    <input id="login"/>
+    <div>password</div>
+    <input id="password" type="password"/>
+    <button onclick="auth()">auth</button>
+    <div id="result"></div>
+</body>
+</html>
