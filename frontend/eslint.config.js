@@ -17,12 +17,17 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
+    "env": {
+      "node": 1
+    },
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
       ],
+      "prettier/prettier": ["error", { "singleQuote": true }],
+      "quotes": ["error", "single", { "avoidEscape": true }]
     },
   },
 )
