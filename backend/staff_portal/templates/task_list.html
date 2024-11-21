@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script>
+        async function logout() {
+            let res = await fetch(location.origin+"/api/logout/", {credentials: "include"})
+            let data = await res.json()
+            location.href='/'
+        }
+    </script>
     <title>Task List</title>
     <style>
         table {
@@ -17,6 +24,7 @@
     </style>
 </head>
 <body>
+    <button onclick="logout()">EXIT</button>
     <h1>Task List</h1>
     <table>
         <thead>

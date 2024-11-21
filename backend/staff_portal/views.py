@@ -1,8 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 import json
 import traceback
 import jwt
+import traceback
+from django.views.decorators.csrf import csrf_exempt
 from .lib import auth as lib_auth
 # Create your views here.
 
@@ -10,21 +12,25 @@ from django.http import HttpResponse, JsonResponse, HttpRequest
 
 
 def data_view(func):
+    @csrf_exempt
     def wrapper(request:HttpRequest):
         data = None
         error = None
         response = HttpResponse({})
 
         request_data = None
-        if request.method == "POST":
+        if request.method in ["POST", "PUT", "DELETE"]:
             request_data = request.POST.dict()
+            print(request_data)
         if request.method == "GET":
             request_data = request.GET.dict()
+        
 
         try:
             data = func(request, response, request_data)
         except Exception as e:
             error = repr(e)
+            traceback.print_exc()
 
         new_response = HttpResponse(
             json.dumps({"data": data, "error": error}, ensure_ascii=False), 
@@ -42,7 +48,7 @@ def home(request):
         pass
     
     if user:
-        return render(request, 'task_list.html', {"user_name": user.name, "user_login": user.login})
+        return redirect('/tasks')
     else:
         return render(request, 'auth.html', {})
 
@@ -71,5 +77,11 @@ def auth(request: HttpRequest, response: HttpResponse, data: dict):
     user = lib_auth.get_authorized_user_by_credentials(login, password)
     token = lib_auth.generate_token_for_user(user)
     response.set_cookie("auth", token)
+
+    return True
+
+@data_view
+def logout(request: HttpRequest, response: HttpResponse, data: dict):
+    response.set_cookie("auth", "deleted")
 
     return True
