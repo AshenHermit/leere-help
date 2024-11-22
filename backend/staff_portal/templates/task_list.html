@@ -7,9 +7,11 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            border-radius: 10px;
+            border-style: hidden;
+            box-shadow: 0 0 0 1px #666;
         }
 
-        table,
         th,
         td {
             border: 1px solid black;
@@ -19,6 +21,12 @@
         td {
             padding: 8px;
             text-align: left;
+        }
+
+        button {
+            border-radius: 10px;
+            border-width: 1px;
+            cursor: pointer;
         }
     </style>
 
@@ -100,10 +108,32 @@
         function closeModal() {
             document.getElementById("task_modal").style.display = "none";
         }
-        document.addEventListener("readystatechange", () => {
+        function hideTaskEditingElements(task) {
+
+        }
+        function setupReports() {
+
+        }
+        window.addEventListener("load", () => {
             Object.keys(tasks).forEach(pk => {
-                let el = document.getElementById("task_edit_" + pk)
-                if (el) el.style.display = tasks[pk].can_edit ? "block" : "none"
+                const task = tasks[pk]
+                let editEl = document.getElementById("task_edit_" + pk)
+                if (editEl) editEl.style.display = task.can_edit ? "block" : "none"
+
+                let reportContainer = document.getElementById("task_reports_" + pk)
+                if (reportContainer) {
+                    let reportAdd = reportContainer.getElementsByClassName("reports_add")[0]
+                    reportAdd.style.display = task.can_add_report ? "block" : "none"
+
+                    let reportList = reportContainer.getElementsByClassName("reports_list")[0]
+                    Object.keys(task.reports).forEach(reportPk => {
+                        var link = document.createElement("a")
+                        link.innerHTML = "📄"
+                        link.target = "_blank"
+                        link.href = "/reports/" + reportPk
+                        reportList.appendChild(link)
+                    })
+                }
             })
         })
         document.addEventListener("click", (e) => {
@@ -112,9 +142,10 @@
     </script>
 </head>
 
-<body style="display: flex; flex-direction: column; gap: 8px; margin: 0;">
+<body
+    style="display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 16px; font-family: monospace;font-size: 14px;">
     <div>{{user.name}}</div>
-    <h1>Task List</h1>
+    <h1>Задачи</h1>
     <table>
         <thead>
             <tr>
@@ -123,6 +154,7 @@
                 <th>автор</th>
                 <th>отдел</th>
                 <th>выполнено</th>
+                <th>отчеты</th>
                 {% if can_create_task %}
                 <th>редактирование</th>
                 {% endif %}
@@ -136,6 +168,14 @@
                 <td>{{ task.author.name }} <span style="opacity: 0.5;">[{{task.author.position.name}}]</span></td>
                 <td>{{ task.department.name }}</td>
                 <td>{{ task.completed|yesno:"✅,❌" }}</td>
+                <td>
+                    <div id="task_reports_{{task.pk}}" style="display: flex; gap: 8px;">
+                        <div class="reports_list">
+
+                        </div>
+                        <button class="reports_add" style="font-size: 20px;"> + </button>
+                    </div>
+                </td>
                 {% if can_create_task %}
                 <td>
                     <div id="task_edit_{{task.pk}}">
@@ -150,7 +190,7 @@
     </table>
     {% if can_create_task %}
     <button style="font-size: 20px; width: 100%;" onclick="editNewTask()">+</button>
-    <div id="task_modal" style="display: none; position: absolute; width: 100%; height: 100%;
+    <div id="task_modal" style="display: none; position: absolute; left: 0; top: 0; width: 100%; height: 100%;
         background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
         <div
             style="position: absolute; display: flex; flex-direction: column; gap: 8px; width: 50%; height: 50%; padding: 20px; background-color: #fff; border-radius: 8px;">

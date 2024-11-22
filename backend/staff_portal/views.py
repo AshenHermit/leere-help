@@ -43,6 +43,19 @@ def task_list(request):
     except:
         traceback.print_exc()
         return render(request, 'forbidden.html')
+    
+
+def report_page(request, pk):
+    try:
+        user = lib.auth.get_authorized_user(request)
+        deps = lib.tasks.get_available_departments(user)
+        
+        report = Report.objects.get(pk=pk)
+        
+        return render(request, 'report.html', {"report": report})
+    except:
+        traceback.print_exc()
+        return render(request, 'forbidden.html')
 
 def debug_page(request):
     users = User.objects.all()

@@ -33,9 +33,17 @@ def get_tasks_map(user: User, tasks: List[Task]):
             "title": task.title,
             "description": task.description,
             "department_pk": task.department.pk,
-            "can_edit": can_edit_task(user, task)
+            "can_edit": can_edit_task(user, task),
+            "can_add_report": can_add_report(user, task),
+            "reports": {}
         }
+        for report in Report.objects.filter(task=task):
+            tasks_map[task.pk]["reports"][report.pk] = report.content
+            
     return tasks_map
 
 def can_edit_task(user:User, task:Task):
     return task.author == user and user.position.level <= 1
+
+def can_add_report(user:User, task:Task):
+    return user.department == task.department

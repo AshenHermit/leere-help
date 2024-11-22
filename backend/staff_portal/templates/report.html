@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Django Site</title>
+    <style>
+        body {
+            font-family: monospace;
+            font-size: 14px;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="display: flex; align-items: center; justify-content: center; min-height: 100dvh;">
+        <div style="min-height: 500px; max-width: 500px; width: 100%;">
+            <hr />
+            <h1 style="text-align: center;">Отчет {{report.pk}}</h1>
+            <div style="padding: 10px;">
+                {{report.content}}
+            </div>
+            <hr />
+        </div>
+
+    </div>
+</body>
+
+</html>
