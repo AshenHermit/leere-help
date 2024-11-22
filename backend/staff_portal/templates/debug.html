@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Debug Page</title>
+    <style>
+        body {
+            padding: 2rem;
+        }
+    </style>
+    <script>
+        async function auth(login) {
+            let payload = {
+                "login": login
+            }
+            let res = await fetch(location.origin + "/api/debug_auth/", {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include", body: JSON.stringify(payload),
+                method: "POST",
+            })
+            let data = await res.json()
+
+            // if (data.data) {
+            //     location.reload()
+            // }
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <div>auth users</div>
+        <hr />
+        {% for user in users %}
+        <div style="display: grid; align-items: center; gap: 8px; max-width: 400px; grid-template-columns: 1fr 1fr;">
+            <div>{{ user.name }} [{{ user.login }}]</div>
+            <button onclick="auth('{{ user.login }}')">auth</button>
+        </div>
+        <hr />
+        {% endfor %}
+    </div>
+</body>
+
+</html>
