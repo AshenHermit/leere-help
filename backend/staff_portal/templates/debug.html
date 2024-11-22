@@ -35,8 +35,8 @@
         <div>auth users</div>
         <hr />
         {% for user in users %}
-        <div style="display: grid; align-items: center; gap: 8px; max-width: 200px; grid-template-columns: 1fr 1fr;">
-            <div>{{ user.login }}</div>
+        <div style="display: grid; align-items: center; gap: 8px; max-width: 400px; grid-template-columns: 1fr 1fr;">
+            <div>{{ user.name }} [{{ user.login }}]</div>
             <button onclick="auth('{{ user.login }}')">auth</button>
         </div>
         <hr />
