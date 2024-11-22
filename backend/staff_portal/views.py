@@ -1,75 +1,49 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 import json
 import traceback
 import jwt
-from .lib import auth as lib_auth
+from typing import List
+from . import lib
+from django.http import HttpResponseForbidden
 # Create your views here.
 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.safestring import mark_safe
 from django.http import HttpResponse, JsonResponse, HttpRequest
 
-
-def data_view(func):
-    def wrapper(request:HttpRequest):
-        data = None
-        error = None
-        response = HttpResponse({})
-
-        request_data = None
-        if request.method == "POST":
-            request_data = request.POST.dict()
-        if request.method == "GET":
-            request_data = request.GET.dict()
-
-        try:
-            data = func(request, response, request_data)
-        except Exception as e:
-            error = repr(e)
-
-        new_response = HttpResponse(
-            json.dumps({"data": data, "error": error}, ensure_ascii=False), 
-            content_type="application/json")
-
-        new_response.cookies = response.cookies
-        return new_response
-    return wrapper
 
 def home(request):
     user = None
     try:
-        user = lib_auth.get_authorized_user(request)
+        user = lib.auth.get_authorized_user(request)
     except:
         pass
     
     if user:
-        return render(request, 'task_list.html', {"user_name": user.name, "user_login": user.login})
+        return redirect("/tasks")
     else:
         return render(request, 'auth.html', {})
 
 def task_list(request):
-    tasks = Task.objects.all()
-    return render(request, 'task_list.html', {'tasks': tasks})
+    try:
+        user = lib.auth.get_authorized_user(request)
+        deps = lib.tasks.get_available_departments(user)
+        tasks = lib.tasks.get_available_tasks(user)
+        tasks_map = lib.tasks.get_tasks_map(user, tasks)
 
-@data_view
-def test(request: HttpRequest, response: HttpResponse, data: dict):
-    
-    return request.COOKIES.get("test_cookie")
+        can_create_task = user.position.level == 1
+        
+        return render(request, 'task_list.html', 
+                      { 'tasks': tasks,
+                        'tasks_map': mark_safe(json.dumps(tasks_map, ensure_ascii=False)), 
+                        'user': user, 
+                        'departments': deps, 
+                        "can_create_task": can_create_task})
+    except:
+        traceback.print_exc()
+        return render(request, 'forbidden.html')
 
-
-@data_view
-def get_user_data(request: HttpRequest, response: HttpResponse, data: dict):
-    user = lib_auth.get_authorized_user(request)
-    return {"name": user.name, "pass": user.password}
-
-@data_view
-def auth(request: HttpRequest, response: HttpResponse, data: dict):
-    if not "login" in data: raise Exception("no login")
-    if not "password" in data: raise Exception("no password")
-    login = data["login"]
-    password = data["password"]
-
-    user = lib_auth.get_authorized_user_by_credentials(login, password)
-    token = lib_auth.generate_token_for_user(user)
-    response.set_cookie("auth", token)
-
-    return True
+def debug_page(request):
+    users = User.objects.all()
+    return render(request, 'debug.html', {'users': users})
