@@ -43,7 +43,7 @@ def get_tasks_map(user: User, tasks: List[Task]):
     return tasks_map
 
 def can_edit_task(user:User, task:Task):
-    return task.author == user and user.position.level <= 1
+    return task.author == user and user.position.level == 0 or 1
 
 def can_add_report(user:User, task:Task):
     return user.department == task.department

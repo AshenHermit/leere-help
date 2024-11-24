@@ -161,7 +161,7 @@
                 <th>автор</th>
                 <th>отдел</th>
                 <th>выполнено</th>
-                <th>отчеты</th>
+                <!-- <th>отчеты</th> -->
                 {% if can_create_task %}
                 <th>редактирование</th>
                 {% endif %}
@@ -175,14 +175,14 @@
                 <td>{{ task.author.name }} <span style="opacity: 0.5;">[{{task.author.position.name}}]</span></td>
                 <td>{{ task.department.name }}</td>
                 <td>{{ task.completed|yesno:"✅,❌" }}</td>
-                <td>
+                <!-- <td>
                     <div id="task_reports_{{task.pk}}" style="display: flex; gap: 8px;">
                         <div class="reports_list">
 
                         </div>
                         <button class="reports_add" style="font-size: 20px;"> + </button>
                     </div>
-                </td>
+                </td> -->
                 {% if can_create_task %}
                 <td>
                     <div id="task_edit_{{task.pk}}">
